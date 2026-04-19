@@ -4,7 +4,8 @@ const {
   Client, 
   GatewayIntentBits, 
   Partials, 
-  ActivityType 
+  ActivityType,
+  ChannelType
 } = require("discord.js");
 const express = require("express");
 const fs = require("fs");
@@ -148,8 +149,8 @@ client.once("ready", () => {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
-  // ---------------- DM FLOW ----------------
-  if (!message.guild) {
+  // ---------------- DM FLOW (v14 FIXED) ----------------
+  if (message.channel.type === ChannelType.DM) {
     const user = message.author;
 
     // No thread + not pending → ask confirmation
@@ -168,7 +169,6 @@ client.on("messageCreate", async (message) => {
         setPending(user.id, false);
 
         const guild = client.guilds.cache.get(SUPPORT_GUILD_ID);
-        const category = guild.channels.cache.get(SUPPORT_CATEGORY_ID);
 
         const channel = await guild.channels.create({
           name: `ticket-${user.username}`.toLowerCase(),
